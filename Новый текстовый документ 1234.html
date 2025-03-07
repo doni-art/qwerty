@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С 8 Марта!</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: pink;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .message {
+            display: none;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+        h1 {
+            color: red;
+            font-size: 40px;
+            margin-top: 20px;
+            text-shadow: 2px 2px 5px white;
+        }
+        p {
+            color: white;
+            font-size: 20px;
+            text-shadow: 1px 1px 3px red;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .heart {
+            font-size: 50px;
+            color: red;
+            position: absolute;
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas"></canvas>
+    <div class="message" id="message">
+        <h1>💖 С 8 Марта, дорогие женщины! 💖</h1>
+        <p>Пусть этот день принесёт вам радость, тепло и любовь!</p>
+    </div>
+    
+    <audio id="bgMusic" autoplay loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mp3">
+    </audio>
+    
+    <script>
+        const canvas = document.getElementById("heartCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function xt(t) {
+            return 16 * Math.pow(Math.sin(t), 3);
+        }
+
+        function yt(t) {
+            return 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        }
+
+        let i = 0;
+
+        function animateHeart() {
+            if (i < Math.PI * 2) {
+                let x = xt(i) * 20 + canvas.width / 2;
+                let y = -yt(i) * 20 + canvas.height / 3;
+                ctx.fillStyle = "red";
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                i += 0.01;
+                requestAnimationFrame(animateHeart);
+            } else {
+                setTimeout(() => {
+                    canvas.style.display = "none";
+                    document.getElementById("message").style.display = "block";
+                }, 1000);
+            }
+        }
+
+        animateHeart();
+
+        // Добавляем плавающие сердечки
+        function createFloatingHeart() {
+            const heart = document.createElement("div");
+            heart.innerHTML = "❤️";
+            heart.classList.add("heart");
+            heart.style.left = Math.random() * window.innerWidth + "px";
+            heart.style.top = window.innerHeight + "px";
+            document.body.appendChild(heart);
+            
+            let moveUp = setInterval(() => {
+                heart.style.top = (parseInt(heart.style.top) - 2) + "px";
+                if (parseInt(heart.style.top) < -50) {
+                    clearInterval(moveUp);
+                    heart.remove();
+                }
+            }, 30);
+        }
+        setInterval(createFloatingHeart, 500);
+
+        // Автовоспроизведение музыки после клика
+        document.body.addEventListener("click", () => {
+            document.getElementById("bgMusic").play();
+        });
+    </script>
+</body>
+</html>
+
